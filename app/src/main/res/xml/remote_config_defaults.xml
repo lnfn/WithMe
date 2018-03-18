@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>message</key>
+        <value>""</value>
+
+        <key>show_back_promo</key>
+        <value>false</value>
+
+        <key>back_promo</key>
+        <value>""</value>
+
+        <key>colorDifferent</key>
+        <value>""</value>
+    </entry>
+</defaultsMap>
