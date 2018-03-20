@@ -3,6 +3,7 @@ package com.eugenetereshkov.withme
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.view.animation.BounceInterpolator
 import com.bumptech.glide.Glide
@@ -15,6 +16,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.releaseContext
 import java.text.SimpleDateFormat
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -22,11 +25,20 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
+    private val newsPresenter: NewsPresenter by inject {
+        mapOf(
+                ID_NEWS to "11",
+                "activity" to this@MainActivity
+        )
+    }
+    private val userConfig: IUserConfig by inject()
+
     private val schedulerSingleThread = Schedulers.from(Executors.newSingleThreadExecutor())
     private val disposable = CompositeDisposable()
 
-    private companion object {
+    companion object {
         const val startDate = "11-11-2017 22"
+        const val ID_NEWS = "id_news"
     }
 
     private val startDateFormat = SimpleDateFormat("dd-MM-yyyy HH")
@@ -36,7 +48,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Log.i("onCreate", userConfig.name)
+
         remoteConf()
+
+        userConfig.name = "Eugene Tereshkov"
     }
 
     override fun onStart() {
@@ -50,8 +66,17 @@ class MainActivity : AppCompatActivity() {
                 .bindTo(disposable)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        Log.i("onResume", newsPresenter.getNews().joinToString())
+    }
+
     override fun onStop() {
         disposable.clear()
+        releaseContext(Constants.AUTH_CONTEXT)
+        Log.i("onStop", userConfig.name)
+
         super.onStop()
     }
 
@@ -62,9 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         firebaseRemoteConfig.setConfigSettings(configSettings)
         firebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults)
-        var cacheExpiration: Long = 3600
-
-        if (firebaseRemoteConfig.info.configSettings.isDeveloperModeEnabled) cacheExpiration = 0
+        val cacheExpiration: Long = if (firebaseRemoteConfig.info.configSettings.isDeveloperModeEnabled) 0 else 3600
 
         firebaseRemoteConfig.fetch(cacheExpiration)
                 .addOnCompleteListener(this, { task ->
