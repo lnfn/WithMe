@@ -9,12 +9,19 @@ import com.eugenetereshkov.withme.Constants.Companion.MAIN_CONTEXT
 import com.eugenetereshkov.withme.MainActivity.Companion.ID_NEWS
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module.applicationContext
+import ru.terrakok.cicerone.Cicerone
+import ru.terrakok.cicerone.Router
+
 
 val appModule = applicationContext {
     context(APP_CONTEXT) {
         bean {
             androidApplication().applicationContext.getSharedPreferences("APP", Context.MODE_PRIVATE)
         } bind (SharedPreferences::class)
+
+        bean { Cicerone.create() }
+        bean { get<Cicerone<Router>>().navigatorHolder }
+        bean { get<Cicerone<Router>>().router }
 
         bean { ResourceManager(androidApplication().applicationContext) }
 

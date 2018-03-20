@@ -1,7 +1,10 @@
 package com.eugenetereshkov.withme
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
@@ -18,12 +21,28 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.releaseContext
+import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Router
+import ru.terrakok.cicerone.android.SupportAppNavigator
 import java.text.SimpleDateFormat
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val router: Router by inject()
+    private val navigatorHolder: NavigatorHolder by inject()
+    private val navigator by lazy {
+        object : SupportAppNavigator(this@MainActivity, R.id.container) {
+            override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
+                "SplashActivity" -> Intent(this@MainActivity, SplashActivity::class.java)
+                else -> null
+            }
+
+            override fun createFragment(screenKey: String?, data: Any?): Fragment? = null
+        }
+    }
 
     private val newsPresenter: NewsPresenter by inject {
         mapOf(
@@ -52,6 +71,8 @@ class MainActivity : AppCompatActivity() {
 
         remoteConf()
 
+        differentTextView.setOnClickListener { router.navigateTo("SplashActivity") }
+
         userConfig.name = "Eugene Tereshkov"
     }
 
@@ -69,7 +90,14 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        navigatorHolder.setNavigator(navigator)
         Log.i("onResume", newsPresenter.getNews().joinToString())
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        navigatorHolder.removeNavigator()
     }
 
     override fun onStop() {
