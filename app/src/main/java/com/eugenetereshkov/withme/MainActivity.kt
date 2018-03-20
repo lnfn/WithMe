@@ -11,6 +11,7 @@ import android.view.View
 import android.view.animation.BounceInterpolator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import io.reactivex.Observable
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     private val startDateFormat = SimpleDateFormat("dd-MM-yyyy HH")
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
+    private val firebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +72,18 @@ class MainActivity : AppCompatActivity() {
         Log.i("onCreate", userConfig.name)
 
         remoteConf()
+
+        firebaseFirestore.collection("users")
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        for (document in it.result) {
+                            Log.d("firebaseFirestore", document.id + " => " + document.data)
+                        }
+                    } else {
+                        Log.w("firebaseFirestore", "Error getting documents.", it.exception)
+                    }
+                }
 
         differentTextView.setOnClickListener { router.navigateTo("SplashActivity") }
 
