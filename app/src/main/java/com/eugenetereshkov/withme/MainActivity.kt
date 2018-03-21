@@ -58,12 +58,25 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val startDate = "11-11-2017 22"
+        const val allYears = 100
         const val ID_NEWS = "id_news"
     }
 
     private val startDateFormat = SimpleDateFormat("dd-MM-yyyy HH")
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
     private val firebaseFirestore = FirebaseFirestore.getInstance()
+    private val onClickListener by lazy {
+        View.OnClickListener {
+            when (it.id) {
+                differentTextView.id -> {
+//                    if (toggleDifferent) differentTextView.setText()
+
+//                    router.navigateTo("SplashActivity")
+                }
+            }
+        }
+    }
+    private var toggleDifferent = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         firebaseFirestore.collection("users")
                 .get()
-                .addOnCompleteListener {
+                .addOnCompleteListener(this@MainActivity) {
                     if (it.isSuccessful) {
                         for (document in it.result) {
                             Log.d("firebaseFirestore", document.id + " => " + document.data)
@@ -85,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-        differentTextView.setOnClickListener { router.navigateTo("SplashActivity") }
+        differentTextView.setOnClickListener(onClickListener)
 
         userConfig.name = "Eugene Tereshkov"
     }
