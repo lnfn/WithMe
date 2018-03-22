@@ -11,9 +11,9 @@ import android.view.View
 import android.view.animation.BounceInterpolator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.eugenetereshkov.withme.ui.LaunchActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -25,6 +25,7 @@ import org.koin.android.ext.android.releaseContext
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
 import ru.terrakok.cicerone.android.SupportAppNavigator
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     private val navigator by lazy {
         object : SupportAppNavigator(this@MainActivity, R.id.container) {
             override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
-                "SplashActivity" -> Intent(this@MainActivity, SplashActivity::class.java)
+                "LaunchActivity" -> Intent(this@MainActivity, LaunchActivity::class.java)
                 else -> null
             }
 
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                 differentTextView.id -> {
 //                    if (toggleDifferent) differentTextView.setText()
 
-//                    router.navigateTo("SplashActivity")
+//                    router.navigateTo("LaunchActivity")
                 }
             }
         }
@@ -82,9 +83,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.i("onCreate", userConfig.name)
+        Timber.i(userConfig.name)
 
-        remoteConf()
+        initRemoteData()
 
         firebaseFirestore.collection("users")
                 .get()
@@ -135,28 +136,14 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
     }
 
-    private fun remoteConf() {
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .build()
-
-        firebaseRemoteConfig.setConfigSettings(configSettings)
-        firebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults)
-        val cacheExpiration: Long = if (firebaseRemoteConfig.info.configSettings.isDeveloperModeEnabled) 0 else 3600
-
-        firebaseRemoteConfig.fetch(cacheExpiration)
-                .addOnCompleteListener(this, { task ->
-                    if (task.isSuccessful) {
-                        firebaseRemoteConfig.activateFetched()
-                        val backPromo = firebaseRemoteConfig.getString("back_promo")
-                        val showPromo = firebaseRemoteConfig.getBoolean("show_back_promo")
-                        val message = firebaseRemoteConfig.getString("message")
-                        val colorDifferent = firebaseRemoteConfig.getString("colorDifferent")
-                        initBackPromo(showPromo, backPromo)
-                        initMessage(message)
-                        setColorDifferent(colorDifferent)
-                    }
-                })
+    private fun initRemoteData() {
+        val backPromo = firebaseRemoteConfig.getString("back_promo")
+        val showPromo = firebaseRemoteConfig.getBoolean("show_back_promo")
+        val message = firebaseRemoteConfig.getString("message")
+        val colorDifferent = firebaseRemoteConfig.getString("colorDifferent")
+        initBackPromo(showPromo, backPromo)
+        initMessage(message)
+        setColorDifferent(colorDifferent)
     }
 
     private fun setColorDifferent(colorDifferent: String) {

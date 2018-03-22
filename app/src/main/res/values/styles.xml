@@ -10,7 +10,12 @@
 
     <style name="AppTheme.TransparentStatus" parent="AppTheme">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="colorPrimaryDark">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 27
@@ -29,10 +30,16 @@ dependencies {
     implementation 'com.android.support:design:27.1.0'
     implementation 'androidx.core:core-ktx:0.2'
 
-    implementation 'com.google.firebase:firebase-core:11.8.0'
-    implementation 'com.google.firebase:firebase-config:11.8.0'
-    implementation 'com.google.firebase:firebase-messaging:11.8.0'
-    implementation 'com.google.firebase:firebase-firestore:11.8.0'
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation "android.arch.lifecycle:viewmodel:1.1.1"
+    implementation "android.arch.lifecycle:livedata:1.1.1"
+
+    kapt "android.arch.lifecycle:compiler:1.1.1"
+
+    implementation 'com.google.firebase:firebase-core:12.0.0'
+    implementation 'com.google.firebase:firebase-config:12.0.0'
+    implementation 'com.google.firebase:firebase-messaging:12.0.0'
+    implementation 'com.google.firebase:firebase-firestore:12.0.0'
 
     implementation "io.reactivex.rxjava2:rxjava:2.1.10"
     implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
@@ -40,6 +47,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:3.8.0'
 
     implementation 'org.koin:koin-android:0.9.1'
+    implementation 'org.koin:koin-android-architecture:0.9.1'
 
     implementation 'ru.terrakok.cicerone:cicerone:3.0.0'
 

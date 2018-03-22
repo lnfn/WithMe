@@ -1,7 +1,6 @@
 package com.eugenetereshkov.withme
 
 import android.app.Application
-import android.util.Log
 import com.eugenetereshkov.withme.di.appModule
 import org.koin.ContextCallback
 import org.koin.android.ext.android.startKoin
@@ -22,7 +21,7 @@ class App : Application() {
 
         registerContextCallBack(object : ContextCallback {
             override fun onContextReleased(contextName: String) {
-                Log.i("onContextReleased", "Context $contextName has been dropped")
+                Timber.i("Context $contextName has been dropped")
             }
         })
     }
