@@ -40,7 +40,7 @@ class UserConfig(
         }
 
     override var login: Boolean
-        get() = sharedPreferences.getBoolean(LOGIN, true)
+        get() = sharedPreferences.getBoolean(LOGIN, false)
         set(value) {
             sharedPreferences.edit { putBoolean(LOGIN, value) }
         }
