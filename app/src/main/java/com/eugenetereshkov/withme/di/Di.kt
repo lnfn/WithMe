@@ -6,8 +6,10 @@ import com.eugenetereshkov.withme.*
 import com.eugenetereshkov.withme.Constants.Companion.APP_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.AUTH_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.MAIN_CONTEXT
-import com.eugenetereshkov.withme.MainActivity.Companion.ID_NEWS
-import com.eugenetereshkov.withme.presenter.LaunchViewModel
+import com.eugenetereshkov.withme.viewmodel.LaunchViewModel
+import com.eugenetereshkov.withme.viewmodel.MainViewModel
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module.applicationContext
@@ -25,19 +27,27 @@ val appModule = applicationContext {
         bean { Cicerone.create() }
         bean { get<Cicerone<Router>>().navigatorHolder }
         bean { get<Cicerone<Router>>().router }
-
         bean { ResourceManager(androidApplication().applicationContext) }
+        bean { UserConfig(get()) as IUserConfig }
+        bean {
+            FirebaseRemoteConfig.getInstance().apply {
+                setConfigSettings(
+                        FirebaseRemoteConfigSettings.Builder()
+                                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                                .build()
+                )
+                setDefaults(R.xml.remote_config_defaults)
+            }
+        }
 
         // Auth scope
         context(AUTH_CONTEXT) {
-            bean { UserConfig(get()) as IUserConfig }
-            viewModel { LaunchViewModel(get<Router>()) }
+            viewModel { LaunchViewModel(get<Router>(), get<ResourceManager>(), get<IUserConfig>()) }
         }
 
         // Main scope
         context(MAIN_CONTEXT) {
-            bean { NewsRepository() as INewsRepository }
-            bean { params -> NewsPresenter(get(), get(), params[ID_NEWS], params["activity"]) }
+            viewModel { MainViewModel(get<Router>(), get<IUserConfig>(), get<FirebaseRemoteConfig>()) }
         }
     }
 }

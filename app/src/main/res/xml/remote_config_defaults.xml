@@ -11,6 +11,6 @@
         <value>""</value>
 
         <key>colorDifferent</key>
-        <value>""</value>
+        <value>"#FFFFFFFF"</value>
     </entry>
 </defaultsMap>

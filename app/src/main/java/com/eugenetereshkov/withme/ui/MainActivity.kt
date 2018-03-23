@@ -1,18 +1,18 @@
-package com.eugenetereshkov.withme
+package com.eugenetereshkov.withme.ui
 
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
-import android.view.animation.BounceInterpolator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.eugenetereshkov.withme.ui.LaunchActivity
-import com.google.firebase.firestore.FirebaseFirestore
+import com.eugenetereshkov.withme.R
+import com.eugenetereshkov.withme.Screens
+import com.eugenetereshkov.withme.viewmodel.MainViewModel
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,12 +20,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
-import org.koin.android.ext.android.releaseContext
 import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Router
 import ru.terrakok.cicerone.android.SupportAppNavigator
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -33,12 +31,11 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-    private val router: Router by inject()
     private val navigatorHolder: NavigatorHolder by inject()
     private val navigator by lazy {
         object : SupportAppNavigator(this@MainActivity, R.id.container) {
             override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
-                "LaunchActivity" -> Intent(this@MainActivity, LaunchActivity::class.java)
+                Screens.LAUNCH_SCREEN -> Intent(this@MainActivity, LaunchActivity::class.java)
                 else -> null
             }
 
@@ -46,68 +43,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val newsPresenter: NewsPresenter by inject {
-        mapOf(
-                ID_NEWS to "11",
-                "activity" to this@MainActivity
-        )
-    }
-    private val userConfig: IUserConfig by inject()
-
+    private val viewModel: MainViewModel by viewModel { mapOf(ID_NEWS to "11") }
     private val schedulerSingleThread = Schedulers.from(Executors.newSingleThreadExecutor())
     private val disposable = CompositeDisposable()
 
     companion object {
+        private const val DIFFERENT_PERIOD_UPDATE = 1000L
         const val startDate = "11-11-2017 22"
-        const val allYears = 100
         const val ID_NEWS = "id_news"
     }
 
     private val startDateFormat = SimpleDateFormat("dd-MM-yyyy HH")
-    private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
-    private val firebaseFirestore = FirebaseFirestore.getInstance()
     private val onClickListener by lazy {
         View.OnClickListener {
             when (it.id) {
                 differentTextView.id -> {
-//                    if (toggleDifferent) differentTextView.setText()
-
-//                    router.navigateTo("LaunchActivity")
                 }
             }
         }
     }
-    private var toggleDifferent = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme_TransparentStatus)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        Timber.i(userConfig.name)
-
-        initRemoteData()
-
-        firebaseFirestore.collection("users")
-                .get()
-                .addOnCompleteListener(this@MainActivity) {
-                    if (it.isSuccessful) {
-                        for (document in it.result) {
-                            Log.d("firebaseFirestore", document.id + " => " + document.data)
-                        }
-                    } else {
-                        Log.w("firebaseFirestore", "Error getting documents.", it.exception)
-                    }
-                }
-
         differentTextView.setOnClickListener(onClickListener)
-
-        userConfig.name = "Eugene Tereshkov"
+        viewModel.remoteData.observe(this@MainActivity, Observer { data -> data?.let { setData(it) } })
+        viewModel.checkAuth()
     }
 
     override fun onStart() {
         super.onStart()
 
-        Observable.interval(1000, TimeUnit.MILLISECONDS)
+        Observable.interval(DIFFERENT_PERIOD_UPDATE, TimeUnit.MILLISECONDS)
                 .map { getDifferent() }
                 .subscribeOn(schedulerSingleThread)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -117,47 +85,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         navigatorHolder.setNavigator(navigator)
-        Log.i("onResume", newsPresenter.getNews().joinToString())
     }
 
     override fun onPause() {
         super.onPause()
-
         navigatorHolder.removeNavigator()
     }
 
     override fun onStop() {
         disposable.clear()
-        releaseContext(Constants.AUTH_CONTEXT)
-        Log.i("onStop", userConfig.name)
-
         super.onStop()
     }
 
-    private fun initRemoteData() {
-        val backPromo = firebaseRemoteConfig.getString("back_promo")
-        val showPromo = firebaseRemoteConfig.getBoolean("show_back_promo")
-        val message = firebaseRemoteConfig.getString("message")
-        val colorDifferent = firebaseRemoteConfig.getString("colorDifferent")
-        initBackPromo(showPromo, backPromo)
-        initMessage(message)
-        setColorDifferent(colorDifferent)
+    private fun setData(data: MainViewModel.RemoteData) {
+        FirebaseRemoteConfig.getInstance().run {
+            initBackPromo(data.showPromo, data.backPromo)
+            initMessage(data.message)
+            setColorDifferent(data.colorDifferent)
+        }
     }
 
     private fun setColorDifferent(colorDifferent: String) {
         if (colorDifferent.isNotBlank()) differentTextView.setTextColor(Color.parseColor(colorDifferent))
-    }
-
-    private fun startAnimate(view: View) {
-        view.alpha = 0f
-        view.translationX = -100f
-        view.visibility = View.VISIBLE
-        view.animate().alpha(1f)
-                .translationX(100f)
-                .setInterpolator(BounceInterpolator())
-                .setDuration(1000).start()
     }
 
     private fun initBackPromo(showPromo: Boolean, backPromo: String) {
@@ -168,8 +118,6 @@ class MainActivity : AppCompatActivity() {
                     .dontAnimate()
                     .into(backImageView)
         }
-
-//        startAnimate(animateImageView)
     }
 
     private fun initMessage(message: String) {
