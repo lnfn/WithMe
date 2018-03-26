@@ -1,4 +1,4 @@
-package com.eugenetereshkov.withme.viewmodel
+package com.eugenetereshkov.withme.presentation
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel

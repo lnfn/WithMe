@@ -10,7 +10,8 @@ import androidx.view.isVisible
 import com.eugenetereshkov.withme.Constants
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
-import com.eugenetereshkov.withme.viewmodel.LaunchViewModel
+import com.eugenetereshkov.withme.extension.bindTo
+import com.eugenetereshkov.withme.presentation.LaunchViewModel
 import com.jakewharton.rxbinding2.widget.textChanges
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_splash.*

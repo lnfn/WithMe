@@ -1,32 +1,19 @@
-package com.eugenetereshkov.withme.viewmodel
+package com.eugenetereshkov.withme.presentation
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.eugenetereshkov.withme.IUserConfig
-import com.eugenetereshkov.withme.Screens
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import ru.terrakok.cicerone.Router
 
 
-class MainViewModel(
-        private val router: Router,
-        private val userConfig: IUserConfig,
+class CardViewModel(
         private val firebaseRemoteConfig: FirebaseRemoteConfig
 ) : ViewModel() {
 
-    val remoteData = MutableLiveData<RemoteData>().apply {
-        postValue(getRemoteData())
-    }
-
-    fun checkAuth() {
-        if (userConfig.login) {
-            userConfig.login = false
+    val remoteDataLiveData: MutableLiveData<RemoteData> by lazy {
+        MutableLiveData<RemoteData>().apply {
+            postValue(getRemoteData())
             initRemoteConf()
-            router.showSystemMessage("${userConfig.name}, Привет!")
-            return
         }
-
-        if (userConfig.name.isEmpty() || userConfig.rememberMe.not()) router.newRootScreen(Screens.LAUNCH_SCREEN)
     }
 
     private fun initRemoteConf() {
@@ -35,7 +22,7 @@ class MainViewModel(
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         firebaseRemoteConfig.activateFetched()
-                        remoteData.postValue(getRemoteData())
+                        remoteDataLiveData.postValue(getRemoteData())
                     }
                 }
     }
