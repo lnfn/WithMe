@@ -3,7 +3,7 @@
     package="com.eugenetereshkov.withme">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--<uses-permission android:name="android.permission.WAKE_LOCK" />-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -27,7 +27,7 @@
 
         <activity
             android:name=".ui.LaunchActivity"
-            android:theme="@style/AppTheme.TransparentStatus" />
+            android:theme="@style/AppTheme" />
 
         <service android:name=".MyFirebaseMessagingService">
             <intent-filter>

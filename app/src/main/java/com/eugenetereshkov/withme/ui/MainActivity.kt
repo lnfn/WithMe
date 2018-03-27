@@ -12,6 +12,7 @@ import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
 import com.eugenetereshkov.withme.presentation.MainViewModel
 import com.eugenetereshkov.withme.presentation.global.GlobalMenuController
+import com.eugenetereshkov.withme.ui.addcard.AddCardFragment
 import com.eugenetereshkov.withme.ui.card.CardFragment
 import com.eugenetereshkov.withme.ui.drawer.NavigationDrawerFragment
 import com.eugenetereshkov.withme.ui.global.BaseFragment
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     private val navigatorHolder: NavigatorHolder by inject()
     private val navigator by lazy {
-        object : SupportAppNavigator(this@MainActivity, R.id.container) {
+        object : SupportAppNavigator(this@MainActivity, R.id.mainContainer) {
             override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
                 Screens.LAUNCH_SCREEN -> Intent(this@MainActivity, LaunchActivity::class.java)
                 else -> null
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun createFragment(screenKey: String?, data: Any?): Fragment? = when (screenKey) {
                 Screens.CARD_SCREEN -> CardFragment()
+                Screens.ADD_CARD -> AddCardFragment()
                 else -> null
             }
         }
@@ -61,7 +63,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResumeFragments() {
         super.onResumeFragments()
-
         menuStateDisposable = menuController.state.subscribe { openNavDrawer(it) }
     }
 

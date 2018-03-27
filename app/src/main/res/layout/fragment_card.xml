@@ -38,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addCardImageView"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="365" />
 
         <TextView
@@ -62,15 +62,5 @@
             app:layout_constraintVertical_bias="0.75"
             tools:text="ghj"
             tools:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/addCardImageView"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:paddingTop="24dp"
-            android:background="#50000000"
-            android:src="@drawable/ic_add_white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

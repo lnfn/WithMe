@@ -26,6 +26,8 @@ class LaunchActivity : AppCompatActivity() {
 
     private val viewModel: LaunchViewModel by viewModel()
     private val navigatorHolder: NavigatorHolder by inject()
+    private val disposable = CompositeDisposable()
+
     private val navigator by lazy {
         object : SupportAppNavigator(this@LaunchActivity, R.id.container) {
             override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
@@ -36,7 +38,6 @@ class LaunchActivity : AppCompatActivity() {
             override fun createFragment(screenKey: String?, data: Any?): Fragment? = null
         }
     }
-    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

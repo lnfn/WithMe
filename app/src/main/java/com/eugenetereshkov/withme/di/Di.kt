@@ -6,10 +6,11 @@ import com.eugenetereshkov.withme.*
 import com.eugenetereshkov.withme.Constants.Companion.APP_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.AUTH_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.MAIN_CONTEXT
-import com.eugenetereshkov.withme.presentation.CardViewModel
 import com.eugenetereshkov.withme.presentation.LaunchViewModel
 import com.eugenetereshkov.withme.presentation.MainViewModel
 import com.eugenetereshkov.withme.presentation.NavigationDrawerViewModel
+import com.eugenetereshkov.withme.presentation.addcard.AddCardViewModel
+import com.eugenetereshkov.withme.presentation.card.CardViewModel
 import com.eugenetereshkov.withme.presentation.global.GlobalMenuController
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -54,6 +55,7 @@ val appModule = applicationContext {
             viewModel { MainViewModel(get<Router>(), get<IUserConfig>()) }
             viewModel { CardViewModel(get<FirebaseRemoteConfig>()) }
             viewModel { NavigationDrawerViewModel(get<GlobalMenuController>(), get<Router>()) }
+            viewModel { AddCardViewModel(get<Router>(), get<ResourceManager>()) }
         }
     }
 }

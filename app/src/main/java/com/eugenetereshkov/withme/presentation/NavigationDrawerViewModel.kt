@@ -19,7 +19,7 @@ class NavigationDrawerViewModel(
 
         if (item != currentSelectedItem) {
             when (item) {
-                is NavigationDrawerFragment.MenuItem.CardItem -> router.replaceScreen(Screens.CARD_SCREEN)
+                is NavigationDrawerFragment.MenuItem.CardItem -> router.navigateTo(Screens.ADD_CARD)
             }
         }
     }
