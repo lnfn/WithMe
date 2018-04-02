@@ -10,8 +10,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.view.isVisible
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.eugenetereshkov.withme.GlideApp
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.presentation.addcard.AddCardViewModel
 import com.eugenetereshkov.withme.ui.global.BaseFragment
@@ -96,10 +96,10 @@ class AddCardFragment : BaseFragment() {
     }
 
     private fun setUserImage(url: String?) {
-        Glide.with(context)
+        GlideApp.with(this@AddCardFragment)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imageViewAddImage)
     }
 }

@@ -5,9 +5,9 @@ import android.arch.lifecycle.Observer
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.eugenetereshkov.withme.Constants.Companion.START_DATE
+import com.eugenetereshkov.withme.GlideApp
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.extension.bindTo
 import com.eugenetereshkov.withme.extension.timeDifferent
@@ -81,7 +81,7 @@ class CardFragment : BaseFragment() {
 
     private fun initBackPromo(showPromo: Boolean, backPromo: String) {
         if (showPromo) {
-            Glide.with(this)
+            GlideApp.with(this@CardFragment)
                     .load(backPromo)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .dontAnimate()
