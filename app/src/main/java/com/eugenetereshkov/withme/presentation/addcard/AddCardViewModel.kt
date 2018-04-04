@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel
 import android.net.Uri
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.ResourceManager
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
@@ -15,7 +16,8 @@ import java.io.File
 
 class AddCardViewModel(
         private val router: Router,
-        private val resourceManager: ResourceManager
+        private val resourceManager: ResourceManager,
+        private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
     val loadingLiveData = MutableLiveData<Boolean>()
