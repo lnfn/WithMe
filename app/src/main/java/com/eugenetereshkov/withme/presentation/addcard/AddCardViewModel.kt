@@ -31,6 +31,11 @@ class AddCardViewModel(
     private var storageTask: StorageTask<UploadTask.TaskSnapshot>? = null
     private val newCard = Card()
 
+    override fun onCleared() {
+        storageTask?.cancel()
+        super.onCleared()
+    }
+
     fun uploadImageToServer(url: String) {
         loadingLiveData.value = true
         val file = Uri.fromFile(File(url))
