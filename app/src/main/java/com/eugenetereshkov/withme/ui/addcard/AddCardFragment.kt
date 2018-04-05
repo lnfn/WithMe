@@ -9,12 +9,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import androidx.view.isVisible
+import androidx.core.view.isVisible
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.eugenetereshkov.withme.GlideApp
 import com.eugenetereshkov.withme.R
+import com.eugenetereshkov.withme.extension.bindTo
 import com.eugenetereshkov.withme.presentation.addcard.AddCardViewModel
 import com.eugenetereshkov.withme.ui.global.BaseFragment
+import com.jakewharton.rxbinding2.widget.textChanges
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_add_card.*
 import org.koin.android.architecture.ext.viewModel
 import permissions.dispatcher.NeedsPermission
@@ -26,17 +29,16 @@ class AddCardFragment : BaseFragment() {
 
     private companion object {
         const val REQUEST_GELLARY = 2
-        const val REQUEST_READ_EXTERNAL_STORAGE = 1
-        const val USER_DATA = "user_data"
     }
 
     override val idResLayout: Int = R.layout.fragment_add_card
 
     private val viewModel: AddCardViewModel by viewModel()
-
+    private val disposable = CompositeDisposable()
     private val clickListener = { view: View ->
         when (view.id) {
             imageViewAddImage.id -> makePickRequestWithPermissionCheck()
+            buttonSave.id -> viewModel.saveCard(editTextMessage.text.toString())
         }
     }
 
@@ -62,6 +64,21 @@ class AddCardFragment : BaseFragment() {
         })
 
         imageViewAddImage.setOnClickListener(clickListener)
+        buttonSave.setOnClickListener(clickListener)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        editTextMessage.textChanges()
+                .filter { it.toString().trim().isNotEmpty() }
+                .subscribe { buttonSave.isVisible = true }
+                .bindTo(disposable)
+    }
+
+    override fun onStop() {
+        disposable.clear()
+        super.onStop()
     }
 
     @SuppressLint("NeedOnRequestPermissionsResult")

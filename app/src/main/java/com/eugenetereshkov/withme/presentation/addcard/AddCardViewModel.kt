@@ -12,18 +12,25 @@ import com.google.firebase.storage.UploadTask
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.io.File
+import java.util.*
 
 
 class AddCardViewModel(
         private val router: Router,
-        private val resourceManager: ResourceManager,
-        private val firestore: FirebaseFirestore
+        private val resourceManager: ResourceManager
 ) : ViewModel() {
+
+    companion object {
+        const val ADD_CARD_RESULT = 1
+        const val CARDS_COLLECTION = "cards_collection"
+    }
 
     val loadingLiveData = MutableLiveData<Boolean>()
     val uploadProgressLiveData = MutableLiveData<Int>()
 
     private var storageTask: StorageTask<UploadTask.TaskSnapshot>? = null
+    private val firestore = FirebaseFirestore.getInstance()
+    private val newCard = Card()
 
     fun uploadImageToServer(url: String) {
         loadingLiveData.value = true
@@ -44,10 +51,31 @@ class AddCardViewModel(
 
             if (it.isSuccessful) {
                 val downloadUrl = it.result.downloadUrl
+                newCard.image = downloadUrl?.toString().orEmpty()
                 Timber.d(downloadUrl.toString())
             } else {
                 router.showSystemMessage(resourceManager.getString(R.string.error))
             }
         })
+    }
+
+    fun saveCard(message: String) {
+        newCard.message = message
+        firestore.collection(CARDS_COLLECTION)
+                .add(newCard)
+                .addOnSuccessListener {
+                    router.showSystemMessage(resourceManager.getString(R.string.saved))
+                    router.exitWithResult(ADD_CARD_RESULT, Unit)
+                }
+                .addOnFailureListener {
+                    router.showSystemMessage(it.message)
+                }
+    }
+
+
+    class Card {
+        var image: String = ""
+        var message: String = ""
+        val createdAt: Date = Date()
     }
 }

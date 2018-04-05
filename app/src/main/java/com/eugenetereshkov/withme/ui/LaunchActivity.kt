@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import androidx.view.isVisible
+import androidx.core.view.isVisible
 import com.eugenetereshkov.withme.Constants
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens

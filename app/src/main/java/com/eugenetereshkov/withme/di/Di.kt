@@ -53,7 +53,7 @@ val appModule = applicationContext {
         // Main scope
         context(MAIN_CONTEXT) {
             viewModel { MainViewModel(get<Router>(), get<IUserConfig>()) }
-            viewModel { CardViewModel(get<FirebaseRemoteConfig>()) }
+            viewModel { CardViewModel(get<FirebaseRemoteConfig>(), get<Router>(), get<ResourceManager>()) }
             viewModel { NavigationDrawerViewModel(get<GlobalMenuController>(), get<Router>()) }
             viewModel { AddCardViewModel(get<Router>(), get<ResourceManager>()) }
         }

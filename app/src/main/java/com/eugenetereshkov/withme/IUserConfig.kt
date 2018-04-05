@@ -1,7 +1,7 @@
 package com.eugenetereshkov.withme
 
 import android.content.SharedPreferences
-import androidx.content.edit
+import androidx.core.content.edit
 
 interface IUserConfig {
     var id: String

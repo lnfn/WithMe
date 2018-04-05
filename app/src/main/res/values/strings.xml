@@ -7,4 +7,6 @@
     <string name="add_card">Добавить открытку</string>
     <string name="create_card">Создать открытку</string>
     <string name="error">Ошибка</string>
+    <string name="save">Сохранить</string>
+    <string name="saved">Сохранено</string>
 </resources>
