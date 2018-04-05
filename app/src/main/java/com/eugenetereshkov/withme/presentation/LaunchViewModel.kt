@@ -28,12 +28,10 @@ class LaunchViewModel(
         postValue(userConfig.rememberMe)
     }
 
-    private val firebaseFirestore = FirebaseFirestore.getInstance()
-
     fun onPasswordEntered(password: String) {
         Timber.d(Thread.currentThread().name)
         loadingLiveData.postValue(true)
-        firebaseFirestore.collection(USERS)
+        FirebaseFirestore.getInstance().collection(USERS)
                 .get()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {

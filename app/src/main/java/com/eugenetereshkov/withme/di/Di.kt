@@ -24,6 +24,16 @@ import ru.terrakok.cicerone.Router
 val appModule = applicationContext {
     // Application scope
     context(APP_CONTEXT) {
+
+        val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance().apply {
+            setConfigSettings(
+                    FirebaseRemoteConfigSettings.Builder()
+                            .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                            .build()
+            )
+            setDefaults(R.xml.remote_config_defaults)
+        }
+
         bean {
             androidApplication().applicationContext.getSharedPreferences("APP", Context.MODE_PRIVATE)
         } bind (SharedPreferences::class)
@@ -34,16 +44,7 @@ val appModule = applicationContext {
         bean { get<Cicerone<Router>>().router }
         bean { ResourceManager(androidApplication().applicationContext) }
         bean { UserConfig(get()) as IUserConfig }
-        bean {
-            FirebaseRemoteConfig.getInstance().apply {
-                setConfigSettings(
-                        FirebaseRemoteConfigSettings.Builder()
-                                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                                .build()
-                )
-                setDefaults(R.xml.remote_config_defaults)
-            }
-        }
+        bean { firebaseRemoteConfig }
 
         // Auth scope
         context(AUTH_CONTEXT) {

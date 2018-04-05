@@ -29,7 +29,6 @@ class AddCardViewModel(
     val uploadProgressLiveData = MutableLiveData<Int>()
 
     private var storageTask: StorageTask<UploadTask.TaskSnapshot>? = null
-    private val firestore = FirebaseFirestore.getInstance()
     private val newCard = Card()
 
     fun uploadImageToServer(url: String) {
@@ -42,11 +41,11 @@ class AddCardViewModel(
         val imageRef = storageRef.child("images/${file.lastPathSegment}")
         val uploadTask = imageRef.putFile(file)
 
-        storageTask = uploadTask.addOnProgressListener({
+        storageTask = uploadTask.addOnProgressListener {
             val progress = 100.0 * it.bytesTransferred / it.totalByteCount
             uploadProgressLiveData.postValue(progress.toInt())
 
-        }).addOnCompleteListener({
+        }.addOnCompleteListener {
             loadingLiveData.postValue(false)
 
             if (it.isSuccessful) {
@@ -56,12 +55,12 @@ class AddCardViewModel(
             } else {
                 router.showSystemMessage(resourceManager.getString(R.string.error))
             }
-        })
+        }
     }
 
     fun saveCard(message: String) {
         newCard.message = message
-        firestore.collection(CARDS_COLLECTION)
+        FirebaseFirestore.getInstance().collection(CARDS_COLLECTION)
                 .add(newCard)
                 .addOnSuccessListener {
                     router.showSystemMessage(resourceManager.getString(R.string.saved))
