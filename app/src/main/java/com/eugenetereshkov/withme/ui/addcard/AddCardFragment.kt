@@ -28,7 +28,7 @@ import permissions.dispatcher.RuntimePermissions
 class AddCardFragment : BaseFragment() {
 
     private companion object {
-        const val REQUEST_GELLARY = 2
+        const val REQUEST_GALLERY = 2
     }
 
     override val idResLayout: Int = R.layout.fragment_add_card
@@ -45,7 +45,10 @@ class AddCardFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        toolbar.title = getString(R.string.create_card)
+        toolbar.apply {
+            title = getString(R.string.create_card)
+            setNavigationOnClickListener { viewModel.onBackButtonPressed() }
+        }
 
         viewModel.loadingLiveData.observe(this@AddCardFragment, Observer { show ->
             show?.let {
@@ -89,7 +92,7 @@ class AddCardFragment : BaseFragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_GELLARY && data != null) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_GALLERY && data != null) {
             val selectImageURI = data.data
             val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
 
@@ -109,7 +112,7 @@ class AddCardFragment : BaseFragment() {
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun makePickRequest() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, REQUEST_GELLARY)
+        startActivityForResult(intent, REQUEST_GALLERY)
     }
 
     private fun setUserImage(url: String?) {
