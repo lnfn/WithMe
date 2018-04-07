@@ -5,30 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.eugenetereshkov.withme.Constants
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
 import com.eugenetereshkov.withme.extension.bindTo
 import com.eugenetereshkov.withme.presentation.LaunchViewModel
+import com.eugenetereshkov.withme.ui.global.BaseActivity
 import com.jakewharton.rxbinding2.widget.textChanges
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_splash.*
 import org.koin.android.architecture.ext.viewModel
-import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.releaseContext
-import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import timber.log.Timber
 
-class LaunchActivity : AppCompatActivity() {
+class LaunchActivity : BaseActivity() {
 
-    private val viewModel: LaunchViewModel by viewModel()
-    private val navigatorHolder: NavigatorHolder by inject()
-    private val disposable = CompositeDisposable()
-
-    private val navigator by lazy {
+    override val layoutResId: Int = R.layout.activity_splash
+    override val navigator: Navigator by lazy {
         object : SupportAppNavigator(this@LaunchActivity, R.id.container) {
             override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
                 Screens.MAIN_SCREEN -> Intent(this@LaunchActivity, MainActivity::class.java)
@@ -39,9 +35,11 @@ class LaunchActivity : AppCompatActivity() {
         }
     }
 
+    private val viewModel: LaunchViewModel by viewModel()
+    private val disposable = CompositeDisposable()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
 
         viewModel.rememberMeLiveData.observe(this@LaunchActivity, Observer { checked ->
             checked?.let { rememberCheckBox.isChecked = checked }
@@ -64,7 +62,6 @@ class LaunchActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        navigatorHolder.setNavigator(navigator)
         passwordEditText.textChanges()
                 .map { it.toString().trim() }
                 .doOnNext { Timber.d(it) }
@@ -75,8 +72,6 @@ class LaunchActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-
-        navigatorHolder.removeNavigator()
         disposable.clear()
     }
 

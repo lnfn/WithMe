@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AppCompatActivity
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
 import com.eugenetereshkov.withme.presentation.MainViewModel
@@ -15,33 +14,23 @@ import com.eugenetereshkov.withme.presentation.global.GlobalMenuController
 import com.eugenetereshkov.withme.ui.addcard.AddCardFragment
 import com.eugenetereshkov.withme.ui.card.CardFragment
 import com.eugenetereshkov.withme.ui.drawer.NavigationDrawerFragment
+import com.eugenetereshkov.withme.ui.global.BaseActivity
 import com.eugenetereshkov.withme.ui.global.BaseFragment
 import com.eugenetereshkov.withme.ui.history.HistoryFragment
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
-import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.Router
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import ru.terrakok.cicerone.commands.Command
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
-    private val currentFragment
-        get() = supportFragmentManager.findFragmentById(R.id.mainContainer) as BaseFragment?
-
-    private val drawerFragment
-        get() = supportFragmentManager.findFragmentById(R.id.navDrawerContainer) as NavigationDrawerFragment?
-
-    private val router: Router by inject()
-    private val viewModel: MainViewModel by viewModel()
-    private val menuController: GlobalMenuController by inject()
-    private var menuStateDisposable: Disposable? = null
-    private val navigatorHolder: NavigatorHolder by inject()
-
-    private val navigator by lazy {
+    override val layoutResId: Int = R.layout.activity_main
+    override val navigator: Navigator by lazy {
         object : SupportAppNavigator(this@MainActivity, R.id.mainContainer) {
             override fun applyCommands(commands: Array<out Command>?) {
                 super.applyCommands(commands)
@@ -62,10 +51,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val currentFragment
+        get() = supportFragmentManager.findFragmentById(R.id.mainContainer) as BaseFragment?
+
+    private val drawerFragment
+        get() = supportFragmentManager.findFragmentById(R.id.navDrawerContainer) as NavigationDrawerFragment?
+
+    private val router: Router by inject()
+    private val viewModel: MainViewModel by viewModel()
+    private val menuController: GlobalMenuController by inject()
+    private var menuStateDisposable: Disposable? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_TransparentStatus)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         viewModel.firstViewAttachLiveData.observe(this@MainActivity, Observer { initMainScreen() })
         viewModel.checkAuth()
@@ -73,12 +72,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResumeFragments() {
         super.onResumeFragments()
-        navigatorHolder.setNavigator(navigator)
         menuStateDisposable = menuController.state.subscribe { openNavDrawer(it) }
     }
 
     override fun onPause() {
-        navigatorHolder.removeNavigator()
         menuStateDisposable?.dispose()
         super.onPause()
     }
