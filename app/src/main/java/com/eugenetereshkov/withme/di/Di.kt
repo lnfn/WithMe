@@ -12,6 +12,7 @@ import com.eugenetereshkov.withme.presentation.NavigationDrawerViewModel
 import com.eugenetereshkov.withme.presentation.addcard.AddCardViewModel
 import com.eugenetereshkov.withme.presentation.card.CardViewModel
 import com.eugenetereshkov.withme.presentation.global.GlobalMenuController
+import com.eugenetereshkov.withme.presentation.history.HistoryViewModel
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.koin.android.architecture.ext.viewModel
@@ -57,6 +58,7 @@ val appModule = applicationContext {
             viewModel { CardViewModel(get<FirebaseRemoteConfig>(), get<Router>(), get<ResourceManager>()) }
             viewModel { NavigationDrawerViewModel(get<GlobalMenuController>(), get<Router>()) }
             viewModel { AddCardViewModel(get<Router>(), get<ResourceManager>()) }
+            viewModel { HistoryViewModel(get<Router>()) }
         }
     }
 }

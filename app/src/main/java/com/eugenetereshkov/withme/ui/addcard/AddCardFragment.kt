@@ -47,7 +47,7 @@ class AddCardFragment : BaseFragment() {
 
         toolbar.apply {
             title = getString(R.string.create_card)
-            setNavigationOnClickListener { viewModel.onBackButtonPressed() }
+            setNavigationOnClickListener { viewModel.onBackPressed() }
         }
 
         viewModel.loadingLiveData.observe(this@AddCardFragment, Observer { show ->
@@ -107,6 +107,10 @@ class AddCardFragment : BaseFragment() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onBackPressed() {
+        viewModel.onBackPressed()
     }
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)

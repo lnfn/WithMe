@@ -76,7 +76,7 @@ class AddCardViewModel(
                 }
     }
 
-    fun onBackButtonPressed() {
+    fun onBackPressed() {
         router.exit()
     }
 

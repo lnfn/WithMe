@@ -22,7 +22,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Router
 import ru.terrakok.cicerone.android.SupportAppNavigator
+import ru.terrakok.cicerone.commands.Command
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,9 +35,19 @@ class MainActivity : AppCompatActivity() {
     private val drawerFragment
         get() = supportFragmentManager.findFragmentById(R.id.navDrawerContainer) as NavigationDrawerFragment?
 
+    private val router: Router by inject()
+    private val viewModel: MainViewModel by viewModel()
+    private val menuController: GlobalMenuController by inject()
+    private var menuStateDisposable: Disposable? = null
     private val navigatorHolder: NavigatorHolder by inject()
+
     private val navigator by lazy {
         object : SupportAppNavigator(this@MainActivity, R.id.mainContainer) {
+            override fun applyCommands(commands: Array<out Command>?) {
+                super.applyCommands(commands)
+                updateNavDrawer()
+            }
+
             override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
                 Screens.LAUNCH_SCREEN -> Intent(this@MainActivity, LaunchActivity::class.java)
                 else -> null
@@ -50,10 +62,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val viewModel: MainViewModel by viewModel()
-    private val menuController: GlobalMenuController by inject()
-    private var menuStateDisposable: Disposable? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_TransparentStatus)
         super.onCreate(savedInstanceState)
@@ -65,18 +73,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResumeFragments() {
         super.onResumeFragments()
+        navigatorHolder.setNavigator(navigator)
         menuStateDisposable = menuController.state.subscribe { openNavDrawer(it) }
     }
 
-    override fun onResume() {
-        super.onResume()
-        navigatorHolder.setNavigator(navigator)
+    override fun onPause() {
+        navigatorHolder.removeNavigator()
+        menuStateDisposable?.dispose()
+        super.onPause()
     }
 
-    override fun onPause() {
-        super.onPause()
-        menuStateDisposable?.dispose()
-        navigatorHolder.removeNavigator()
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            openNavDrawer(false)
+        } else {
+            currentFragment?.onBackPressed() ?: router.finishChain()
+        }
     }
 
     private fun initMainScreen() {

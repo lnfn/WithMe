@@ -13,4 +13,6 @@ abstract class BaseFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(idResLayout, container, false)
     }
+
+    open fun onBackPressed() {}
 }
