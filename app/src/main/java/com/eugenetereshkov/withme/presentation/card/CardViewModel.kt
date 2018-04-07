@@ -35,6 +35,10 @@ class CardViewModel(
         super.onCleared()
     }
 
+    fun onBackPressed() {
+        router.exit()
+    }
+
     private fun getLastCard() {
         firestore.collection(AddCardViewModel.CARDS_COLLECTION)
                 .orderBy("createdAt", Query.Direction.DESCENDING).limit(1)

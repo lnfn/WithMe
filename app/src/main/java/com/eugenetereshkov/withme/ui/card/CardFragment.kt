@@ -69,6 +69,10 @@ class CardFragment : BaseFragment() {
         super.onStop()
     }
 
+    override fun onBackPressed() {
+        viewModel.onBackPressed()
+    }
+
     private fun setData(data: CardViewModel.RemoteData) {
         initBackPromo(data.showPromo, data.backPromo)
         initMessage(data.message)
