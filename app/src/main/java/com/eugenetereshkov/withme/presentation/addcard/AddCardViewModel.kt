@@ -76,6 +76,10 @@ class AddCardViewModel(
                 }
     }
 
+    fun onBackButtonPressed() {
+        router.exit()
+    }
+
 
     class Card {
         var image: String = ""

@@ -15,10 +15,10 @@ class NavigationDrawerFragment : BaseFragment(), NavigationDrawerView {
     override val idResLayout: Int = R.layout.fragment_navigation_drawer
 
     private val viewModel: NavigationDrawerViewModel by inject()
-
     private val itemClickListener = { view: View ->
         when (view.id) {
             textViewAddCardItem.id -> viewModel.onMenuItemClicked(view.tag as MenuItem)
+            textViewHistory.id -> viewModel.onMenuItemClicked(view.tag as MenuItem)
         }
     }
 
@@ -29,6 +29,11 @@ class NavigationDrawerFragment : BaseFragment(), NavigationDrawerView {
             tag = MenuItem.CardItem()
             setOnClickListener(itemClickListener)
         }
+
+        textViewHistory.apply {
+            tag = MenuItem.History()
+            setOnClickListener(itemClickListener)
+        }
     }
 
     override fun onScreenChanged(item: MenuItem) {
@@ -36,5 +41,6 @@ class NavigationDrawerFragment : BaseFragment(), NavigationDrawerView {
 
     sealed class MenuItem {
         class CardItem : MenuItem()
+        class History : MenuItem()
     }
 }

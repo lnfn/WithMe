@@ -9,4 +9,5 @@
     <string name="error">Ошибка</string>
     <string name="save">Сохранить</string>
     <string name="saved">Сохранено</string>
+    <string name="history">История</string>
 </resources>

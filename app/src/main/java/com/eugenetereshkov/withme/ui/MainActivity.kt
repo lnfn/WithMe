@@ -16,6 +16,7 @@ import com.eugenetereshkov.withme.ui.addcard.AddCardFragment
 import com.eugenetereshkov.withme.ui.card.CardFragment
 import com.eugenetereshkov.withme.ui.drawer.NavigationDrawerFragment
 import com.eugenetereshkov.withme.ui.global.BaseFragment
+import com.eugenetereshkov.withme.ui.history.HistoryFragment
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.architecture.ext.viewModel
@@ -42,7 +43,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun createFragment(screenKey: String?, data: Any?): Fragment? = when (screenKey) {
                 Screens.CARD_SCREEN -> CardFragment()
-                Screens.ADD_CARD -> AddCardFragment()
+                Screens.ADD_CARD_SCREEN -> AddCardFragment()
+                Screens.HISTORY_SCREEN -> HistoryFragment()
                 else -> null
             }
         }
