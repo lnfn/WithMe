@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import com.eugenetereshkov.withme.R
@@ -25,6 +26,7 @@ import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.Router
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import ru.terrakok.cicerone.commands.Command
+import ru.terrakok.cicerone.commands.Forward
 
 
 class MainActivity : BaseActivity() {
@@ -47,6 +49,17 @@ class MainActivity : BaseActivity() {
                 Screens.ADD_CARD_SCREEN -> AddCardFragment()
                 Screens.HISTORY_SCREEN -> HistoryFragment()
                 else -> null
+            }
+
+            override fun setupFragmentTransactionAnimation(command: Command?, currentFragment: Fragment?, nextFragment: Fragment?, fragmentTransaction: FragmentTransaction?) {
+                when (command) {
+                    is Forward -> fragmentTransaction?.setCustomAnimations(
+                            R.anim.slide_in_left,
+                            R.anim.slide_out_left,
+                            R.anim.slide_in_right,
+                            R.anim.slide_out_right
+                    )
+                }
             }
         }
     }
