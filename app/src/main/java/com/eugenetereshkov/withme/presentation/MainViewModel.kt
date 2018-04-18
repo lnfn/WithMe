@@ -12,21 +12,15 @@ class MainViewModel(
         private val userConfig: IUserConfig
 ) : ViewModel() {
 
-    private var firstStart = true
     val firstViewAttachLiveData = MutableLiveData<Unit>()
 
     fun checkAuth() {
-        if (firstStart.not()) return
-
-        firstStart = false
-
-        if (userConfig.login) {
-            userConfig.login = false
+        if (userConfig.login && userConfig.rememberMe) {
             firstViewAttachLiveData.value = Unit
             router.showSystemMessage("${userConfig.name}, Привет!")
             return
         }
 
-        if (userConfig.name.isEmpty() || userConfig.rememberMe.not()) router.newRootScreen(Screens.LAUNCH_SCREEN)
+        router.newRootScreen(Screens.LAUNCH_SCREEN)
     }
 }

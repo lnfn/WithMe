@@ -2,10 +2,14 @@ package com.eugenetereshkov.withme.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.eugenetereshkov.withme.*
+import com.eugenetereshkov.withme.BuildConfig
 import com.eugenetereshkov.withme.Constants.Companion.APP_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.AUTH_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.MAIN_CONTEXT
+import com.eugenetereshkov.withme.IUserConfig
+import com.eugenetereshkov.withme.R
+import com.eugenetereshkov.withme.ResourceManager
+import com.eugenetereshkov.withme.UserConfig
 import com.eugenetereshkov.withme.presentation.LaunchViewModel
 import com.eugenetereshkov.withme.presentation.MainViewModel
 import com.eugenetereshkov.withme.presentation.NavigationDrawerViewModel
@@ -25,16 +29,6 @@ import ru.terrakok.cicerone.Router
 val appModule = applicationContext {
     // Application scope
     context(APP_CONTEXT) {
-
-        val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance().apply {
-            setConfigSettings(
-                    FirebaseRemoteConfigSettings.Builder()
-                            .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                            .build()
-            )
-            setDefaults(R.xml.remote_config_defaults)
-        }
-
         bean {
             androidApplication().applicationContext.getSharedPreferences("APP", Context.MODE_PRIVATE)
         } bind (SharedPreferences::class)
@@ -45,7 +39,6 @@ val appModule = applicationContext {
         bean { get<Cicerone<Router>>().router }
         bean { ResourceManager(androidApplication().applicationContext) }
         bean { UserConfig(get()) as IUserConfig }
-        bean { firebaseRemoteConfig }
 
         // Auth scope
         context(AUTH_CONTEXT) {
@@ -55,10 +48,23 @@ val appModule = applicationContext {
         // Main scope
         context(MAIN_CONTEXT) {
             viewModel { MainViewModel(get<Router>(), get<IUserConfig>()) }
-            viewModel { CardViewModel(get<FirebaseRemoteConfig>(), get<Router>(), get<ResourceManager>()) }
+            viewModel { CardViewModel(get<FirebaseRemoteConfig>(), get<Router>(), get<GlobalMenuController>()) }
             viewModel { NavigationDrawerViewModel(get<GlobalMenuController>(), get<Router>()) }
             viewModel { AddCardViewModel(get<Router>(), get<ResourceManager>()) }
             viewModel { HistoryViewModel(get<Router>()) }
         }
     }
+}
+
+val firebaseModule = applicationContext {
+    val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance().apply {
+        setConfigSettings(
+                FirebaseRemoteConfigSettings.Builder()
+                        .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                        .build()
+        )
+        setDefaults(R.xml.remote_config_defaults)
+    }
+
+    bean { firebaseRemoteConfig }
 }

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import com.eugenetereshkov.withme.Constants
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
 import com.eugenetereshkov.withme.presentation.MainViewModel
@@ -22,6 +23,7 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.releaseContext
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.Router
 import ru.terrakok.cicerone.android.SupportAppNavigator
@@ -93,6 +95,11 @@ class MainActivity : BaseActivity() {
         super.onPause()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isFinishing) releaseContext(Constants.MAIN_CONTEXT)
+    }
+
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             openNavDrawer(false)
@@ -104,8 +111,8 @@ class MainActivity : BaseActivity() {
     private fun initMainScreen() {
         supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.mainContainer, CardFragment())
-                .replace(R.id.navDrawerContainer, NavigationDrawerFragment())
+                .add(R.id.mainContainer, CardFragment())
+                .add(R.id.navDrawerContainer, NavigationDrawerFragment())
                 .commitNow()
         updateNavDrawer()
     }

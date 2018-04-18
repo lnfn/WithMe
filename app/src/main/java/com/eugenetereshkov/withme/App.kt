@@ -2,6 +2,7 @@ package com.eugenetereshkov.withme
 
 import android.app.Application
 import com.eugenetereshkov.withme.di.appModule
+import com.eugenetereshkov.withme.di.firebaseModule
 import org.koin.ContextCallback
 import org.koin.android.ext.android.startKoin
 import org.koin.standalone.StandAloneContext.registerContextCallBack
@@ -17,7 +18,7 @@ class App : Application() {
             Timber.plant(DebugTree())
         }
 
-        startKoin(this, listOf(appModule))
+        startKoin(this, listOf(appModule, firebaseModule))
 
         registerContextCallBack(object : ContextCallback {
             override fun onContextReleased(contextName: String) {

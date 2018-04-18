@@ -2,8 +2,8 @@ package com.eugenetereshkov.withme.presentation.card
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.eugenetereshkov.withme.ResourceManager
 import com.eugenetereshkov.withme.presentation.addcard.AddCardViewModel
+import com.eugenetereshkov.withme.presentation.global.GlobalMenuController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -13,7 +13,7 @@ import ru.terrakok.cicerone.Router
 class CardViewModel(
         private val firebaseRemoteConfig: FirebaseRemoteConfig,
         private val router: Router,
-        private val resourceManager: ResourceManager
+        private val globalMenuController: GlobalMenuController
 ) : ViewModel() {
 
     init {
@@ -23,16 +23,18 @@ class CardViewModel(
     }
 
     val remoteDataLiveData: MutableLiveData<RemoteData> by lazy {
-        MutableLiveData<RemoteData>().apply {
+        MutableLiveData<RemoteData>().also {
             initRemoteConf()
         }
     }
 
-    private val firestore = FirebaseFirestore.getInstance()
-
     override fun onCleared() {
         router.removeResultListener(AddCardViewModel.ADD_CARD_RESULT)
         super.onCleared()
+    }
+
+    fun openMenu() {
+        globalMenuController.open()
     }
 
     fun onBackPressed() {
@@ -40,7 +42,8 @@ class CardViewModel(
     }
 
     private fun getLastCard() {
-        firestore.collection(AddCardViewModel.CARDS_COLLECTION)
+        FirebaseFirestore.getInstance()
+                .collection(AddCardViewModel.CARDS_COLLECTION)
                 .orderBy("createdAt", Query.Direction.DESCENDING).limit(1)
                 .get()
                 .addOnCompleteListener {
