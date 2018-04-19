@@ -17,7 +17,9 @@ class LaunchViewModel(
         private val userConfig: IUserConfig
 ) : ViewModel() {
 
-    private companion object {
+    companion object {
+        const val AUTH = "auth"
+
         private const val USERS = "users"
     }
 
@@ -40,7 +42,7 @@ class LaunchViewModel(
                             userConfig.id = it.id
                             userConfig.name = it.data["name"].toString()
                             userConfig.login = true
-                            router.newRootScreen(Screens.MAIN_SCREEN)
+                            router.newRootScreen(Screens.MAIN_SCREEN, true)
                         }
                                 ?: router.showSystemMessage(resourceManager.getString(R.string.password_fail))
                     } else {

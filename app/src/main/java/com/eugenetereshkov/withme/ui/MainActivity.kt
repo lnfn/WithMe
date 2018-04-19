@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout
 import com.eugenetereshkov.withme.Constants
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
+import com.eugenetereshkov.withme.presentation.LaunchViewModel
 import com.eugenetereshkov.withme.presentation.MainViewModel
 import com.eugenetereshkov.withme.presentation.global.GlobalMenuController
 import com.eugenetereshkov.withme.ui.addcard.AddCardFragment
@@ -73,7 +74,9 @@ class MainActivity : BaseActivity() {
         get() = supportFragmentManager.findFragmentById(R.id.navDrawerContainer) as NavigationDrawerFragment?
 
     private val router: Router by inject()
-    private val viewModel: MainViewModel by viewModel()
+    private val viewModel: MainViewModel by viewModel {
+        mapOf(LaunchViewModel.AUTH to intent.getBooleanExtra(LaunchViewModel.AUTH, false))
+    }
     private val menuController: GlobalMenuController by inject()
     private var menuStateDisposable: Disposable? = null
 

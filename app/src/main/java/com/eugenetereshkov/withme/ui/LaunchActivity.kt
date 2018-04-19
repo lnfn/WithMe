@@ -27,7 +27,9 @@ class LaunchActivity : BaseActivity() {
     override val navigator: Navigator by lazy {
         object : SupportAppNavigator(this@LaunchActivity, R.id.container) {
             override fun createActivityIntent(context: Context?, screenKey: String?, data: Any?): Intent? = when (screenKey) {
-                Screens.MAIN_SCREEN -> Intent(this@LaunchActivity, MainActivity::class.java)
+                Screens.MAIN_SCREEN -> Intent(this@LaunchActivity, MainActivity::class.java).apply {
+                    putExtra(LaunchViewModel.AUTH, data as Boolean)
+                }
                 else -> null
             }
 

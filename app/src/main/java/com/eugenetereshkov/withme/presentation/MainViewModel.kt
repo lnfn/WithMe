@@ -9,16 +9,20 @@ import ru.terrakok.cicerone.Router
 
 class MainViewModel(
         private val router: Router,
-        private val userConfig: IUserConfig
+        private val userConfig: IUserConfig,
+        private val isAuth: Boolean
 ) : ViewModel() {
 
     val firstViewAttachLiveData = MutableLiveData<Unit>()
 
     fun checkAuth() {
-        if (userConfig.login && userConfig.rememberMe) {
-            firstViewAttachLiveData.value = Unit
-            router.showSystemMessage("${userConfig.name}, Привет!")
-            return
+
+        if (userConfig.login) {
+            if (isAuth || userConfig.rememberMe) {
+                firstViewAttachLiveData.value = Unit
+                router.showSystemMessage("${userConfig.name}, Привет!")
+                return
+            }
         }
 
         router.newRootScreen(Screens.LAUNCH_SCREEN)
