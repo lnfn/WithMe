@@ -1,14 +1,11 @@
-package com.eugenetereshkov.withme;
+package com.eugenetereshkov.withme
 
 
-import android.util.Log;
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.iid.FirebaseInstanceIdService
+import timber.log.Timber
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
-
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
-
-    private static final String TAG = "MyFirebaseIIDService";
+class MyFirebaseInstanceIDService : FirebaseInstanceIdService() {
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -16,28 +13,28 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      * is initially generated so this is where you would retrieve the token.
      */
     // [START refresh_token]
-    @Override
-    public void onTokenRefresh() {
+    override fun onTokenRefresh() {
         // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Refreshed token: " + refreshedToken);
+        val refreshedToken = FirebaseInstanceId.getInstance().token
+        Timber.d("Refreshed token: $refreshedToken")
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        sendRegistrationToServer(refreshedToken);
+        sendRegistrationToServer(refreshedToken)
     }
     // [END refresh_token]
 
     /**
      * Persist token to third-party servers.
-     * <p>
+     *
+     *
      * Modify this method to associate the user's FCM InstanceID token with any server-side account
      * maintained by your application.
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
+    private fun sendRegistrationToServer(token: String?) {
         // TODO: Implement this method to send token to your app server.
     }
 }
