@@ -1,5 +1,7 @@
 package com.eugenetereshkov.withme.ui.drawer
 
+import com.eugenetereshkov.withme.entity.MenuItem
+
 interface NavigationDrawerView {
-    fun onScreenChanged(item: NavigationDrawerFragment.MenuItem)
+    fun onScreenChanged(@MenuItem item: String)
 }

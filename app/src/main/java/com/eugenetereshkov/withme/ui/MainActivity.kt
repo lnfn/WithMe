@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout
 import com.eugenetereshkov.withme.Constants
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
+import com.eugenetereshkov.withme.entity.MenuItem
 import com.eugenetereshkov.withme.presentation.LaunchViewModel
 import com.eugenetereshkov.withme.presentation.MainViewModel
 import com.eugenetereshkov.withme.presentation.global.GlobalMenuController
@@ -131,7 +132,7 @@ class MainActivity : BaseActivity() {
         drawerFragment?.let { drawerFragment ->
             currentFragment?.let {
                 when (it) {
-                    is CardFragment -> drawerFragment.onScreenChanged(NavigationDrawerFragment.MenuItem.CardItem())
+                    is CardFragment -> drawerFragment.onScreenChanged(MenuItem.CARD)
                 }
                 enableNavDrawer(isNavDrawerAvailableForFragment(it))
             }

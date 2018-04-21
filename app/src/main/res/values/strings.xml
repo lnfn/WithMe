@@ -11,4 +11,8 @@
     <string name="saved">Сохранено</string>
     <string name="history">История</string>
     <string name="hi">%s, Привет!</string>
+    <string name="logout">Выйти</string>
+    <string name="yes">Да</string>
+    <string name="cancel">Отмена</string>
+    <string name="logout_question">Выйти из приложения</string>
 </resources>

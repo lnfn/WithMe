@@ -51,7 +51,7 @@ val appModule = applicationContext {
                 MainViewModel(get<Router>(), get<IUserConfig>(), params[LaunchViewModel.AUTH], get<ResourceManager>())
             }
             viewModel { CardViewModel(get<FirebaseRemoteConfig>(), get<Router>(), get<GlobalMenuController>()) }
-            viewModel { NavigationDrawerViewModel(get<GlobalMenuController>(), get<Router>()) }
+            viewModel { NavigationDrawerViewModel(get<GlobalMenuController>(), get<Router>(), get<IUserConfig>()) }
             viewModel { AddCardViewModel(get<Router>(), get<ResourceManager>()) }
             viewModel { HistoryViewModel(get<Router>()) }
         }
