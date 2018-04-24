@@ -51,8 +51,8 @@ class CardViewModel(
                         it.result.documents.getOrNull(0)?.let {
                             val data = RemoteData(
                                     showPromo = firebaseRemoteConfig.getBoolean("show_back_promo"),
-                                    backPromo = it.data["image"].toString(),
-                                    message = it.data["message"].toString(),
+                                    backPromo = it.data?.get("image").toString(),
+                                    message = it.data?.get("message").toString(),
                                     colorDifferent = firebaseRemoteConfig.getString("colorDifferent")
                             )
                             remoteDataLiveData.postValue(data)

@@ -23,9 +23,9 @@ class HistoryViewModel(
                         val cardList = it.result.documents.flatMap {
                             listOf(
                                     CardData(
-                                            image = it.data["image"].toString(),
-                                            message = it.data["message"].toString(),
-                                            createdAt = it.data["createdAt"] as Date
+                                            image = it.data?.get("image").toString(),
+                                            message = it.data?.get("message").toString(),
+                                            createdAt = it.data?.get("createdAt") as Date
                                     )
                             )
                         }
