@@ -38,8 +38,6 @@ class HistoryFragment : BaseFragment() {
                 adapter.submitList(it)
             }
         })
-
-        viewModel.getHistory()
     }
 
     override fun onBackPressed() {
