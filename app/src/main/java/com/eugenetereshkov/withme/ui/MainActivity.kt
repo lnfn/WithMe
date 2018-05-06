@@ -85,7 +85,10 @@ class MainActivity : BaseActivity() {
         setTheme(R.style.AppTheme_TransparentStatus)
         super.onCreate(savedInstanceState)
 
-        viewModel.firstViewAttachLiveData.observe(this@MainActivity, Observer { initMainScreen() })
+        viewModel.firstViewAttachLiveData.observe(this@MainActivity, Observer {
+            if (savedInstanceState == null) initMainScreen()
+        })
+
         viewModel.checkAuth()
     }
 

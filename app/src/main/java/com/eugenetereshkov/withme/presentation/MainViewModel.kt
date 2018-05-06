@@ -19,7 +19,6 @@ class MainViewModel(
     val firstViewAttachLiveData = MutableLiveData<Unit>()
 
     fun checkAuth() {
-
         if (userConfig.login) {
             if (isAuth || userConfig.rememberMe) {
                 firstViewAttachLiveData.value = Unit
