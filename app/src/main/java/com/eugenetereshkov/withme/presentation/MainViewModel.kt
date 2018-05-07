@@ -19,14 +19,16 @@ class MainViewModel(
     val firstViewAttachLiveData = MutableLiveData<Unit>()
 
     fun checkAuth() {
-        if (userConfig.login) {
-            if (isAuth || userConfig.rememberMe) {
-                firstViewAttachLiveData.value = Unit
-                router.showSystemMessage(resourceManager.getString(R.string.hi, userConfig.name))
-                return
+        if (firstViewAttachLiveData.value == null) {
+            if (userConfig.login) {
+                if (isAuth || userConfig.rememberMe) {
+                    firstViewAttachLiveData.value = Unit
+                    router.showSystemMessage(resourceManager.getString(R.string.hi, userConfig.name))
+                    return
+                }
             }
-        }
 
-        router.newRootScreen(Screens.LAUNCH_SCREEN)
+            router.newRootScreen(Screens.LAUNCH_SCREEN)
+        }
     }
 }

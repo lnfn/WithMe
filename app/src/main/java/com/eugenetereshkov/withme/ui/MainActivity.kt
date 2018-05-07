@@ -86,7 +86,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         viewModel.firstViewAttachLiveData.observe(this@MainActivity, Observer {
-            if (savedInstanceState == null) initMainScreen()
+            savedInstanceState ?: initMainScreen()
         })
 
         viewModel.checkAuth()
