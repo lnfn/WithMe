@@ -16,16 +16,14 @@ class CardViewModel(
         private val globalMenuController: GlobalMenuController
 ) : ViewModel() {
 
-    init {
-        router.setResultListener(AddCardViewModel.ADD_CARD_RESULT, {
-            getLastCard()
-        })
-    }
+    val remoteDataLiveData = MutableLiveData<RemoteData>()
 
-    val remoteDataLiveData: MutableLiveData<RemoteData> by lazy {
-        MutableLiveData<RemoteData>().also {
-            initRemoteConf()
+    init {
+        router.setResultListener(AddCardViewModel.ADD_CARD_RESULT) {
+            getLastCard()
         }
+
+        initRemoteConf()
     }
 
     override fun onCleared() {
@@ -39,6 +37,17 @@ class CardViewModel(
 
     fun onBackPressed() {
         router.exit()
+    }
+
+    private fun initRemoteConf() {
+        val cacheExpiration: Long = if (firebaseRemoteConfig.info.configSettings.isDeveloperModeEnabled) 0 else 3600
+        firebaseRemoteConfig.fetch(cacheExpiration)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        firebaseRemoteConfig.activateFetched()
+                        getLastCard()
+                    }
+                }
     }
 
     private fun getLastCard() {
@@ -59,17 +68,6 @@ class CardViewModel(
                         }
                     } else {
                         router.showSystemMessage(it.exception?.message.orEmpty())
-                    }
-                }
-    }
-
-    private fun initRemoteConf() {
-        val cacheExpiration: Long = if (firebaseRemoteConfig.info.configSettings.isDeveloperModeEnabled) 0 else 3600
-        firebaseRemoteConfig.fetch(cacheExpiration)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        firebaseRemoteConfig.activateFetched()
-                        getLastCard()
                     }
                 }
     }

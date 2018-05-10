@@ -19,7 +19,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_card.*
 import org.koin.android.architecture.ext.viewModel
-import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -53,8 +52,6 @@ class CardFragment : BaseFragment() {
         differentTextView.setOnClickListener(onClickListener)
         viewModel.remoteDataLiveData.observe(this@CardFragment, Observer { data ->
             data?.let { setData(it) }
-
-            Timber.d("setData")
         })
     }
 

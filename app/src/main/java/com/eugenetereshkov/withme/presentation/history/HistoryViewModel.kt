@@ -16,21 +16,46 @@ class HistoryViewModel(
         private val router: Router
 ) : ViewModel() {
 
-    val historyLiveData by lazy {
-        MutableLiveData<List<CardData>>().also {
-            getHistory()
-            getUpdate()
-        }
-    }
+    val historyLiveData = MutableLiveData<List<CardData>>()
 
     private val firestore = FirebaseFirestore.getInstance()
     private var listenerRegistration: ListenerRegistration? = null
     private var data = mutableListOf<CardData>()
 
+    init {
+        getUpdate()
+        getHistory()
+    }
 
     override fun onCleared() {
         listenerRegistration?.remove()
         super.onCleared()
+    }
+
+    private fun getHistory() {
+//        if (historyLiveData.value == null) {
+        firestore.collection(AddCardViewModel.CARDS_COLLECTION)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        val cardList = it.result.documents.flatMap {
+                            listOf(
+                                    CardData(
+                                            id = it.id,
+                                            image = it.data?.get("image").toString(),
+                                            message = it.data?.get("message").toString(),
+                                            createdAt = it.data?.get("createdAt") as Date
+                                    )
+                            )
+                        }
+                        data = cardList as MutableList<CardData>
+                        historyLiveData.postValue(data)
+                    } else {
+                        router.showSystemMessage(it.exception?.message.orEmpty())
+                    }
+                }
+//        }
     }
 
     private fun getUpdate() {
@@ -52,30 +77,6 @@ class HistoryViewModel(
                                 historyLiveData.postValue(data)
                             }
                         }
-                    }
-                }
-    }
-
-    private fun getHistory() {
-        firestore.collection(AddCardViewModel.CARDS_COLLECTION)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .get()
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        val cardList = it.result.documents.flatMap {
-                            listOf(
-                                    CardData(
-                                            id = it.id,
-                                            image = it.data?.get("image").toString(),
-                                            message = it.data?.get("message").toString(),
-                                            createdAt = it.data?.get("createdAt") as Date
-                                    )
-                            )
-                        }
-                        data = cardList as MutableList<CardData>
-                        historyLiveData.postValue(data)
-                    } else {
-                        router.showSystemMessage(it.exception?.message.orEmpty())
                     }
                 }
     }
