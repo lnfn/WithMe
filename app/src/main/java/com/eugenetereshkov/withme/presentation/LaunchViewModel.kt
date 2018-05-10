@@ -8,7 +8,6 @@ import com.eugenetereshkov.withme.ResourceManager
 import com.eugenetereshkov.withme.Screens
 import com.google.firebase.firestore.FirebaseFirestore
 import ru.terrakok.cicerone.Router
-import timber.log.Timber
 
 
 class LaunchViewModel(
@@ -31,7 +30,6 @@ class LaunchViewModel(
     }
 
     fun onPasswordEntered(password: String) {
-        Timber.d(Thread.currentThread().name)
         loadingLiveData.postValue(true)
         FirebaseFirestore.getInstance().collection(USERS)
                 .get()
