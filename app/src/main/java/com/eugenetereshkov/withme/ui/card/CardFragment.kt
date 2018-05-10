@@ -3,7 +3,9 @@ package com.eugenetereshkov.withme.ui.card
 
 import android.arch.lifecycle.Observer
 import android.graphics.Color
+import android.graphics.PointF
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.eugenetereshkov.withme.Constants.Companion.START_DATE
@@ -31,6 +33,28 @@ class CardFragment : BaseFragment() {
 
     override val idResLayout: Int = R.layout.fragment_card
 
+    private val differentTextViewTouchListener = object : View.OnTouchListener {
+        private var downPT = PointF()
+        private var startPT = PointF()
+
+        override fun onTouch(view: View, event: MotionEvent): Boolean {
+            when (event.action) {
+                MotionEvent.ACTION_MOVE -> {
+                    view.x = (startPT.x + event.x - downPT.x)
+                    view.y = (startPT.y + event.y - downPT.y)
+                    startPT.set(view.x, view.y)
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    downPT.set(event.x, event.y)
+                    startPT.set(view.x, view.y)
+                }
+                MotionEvent.ACTION_UP -> {
+                }
+            }
+
+            return true
+        }
+    }
     private val viewModel: CardViewModel by viewModel()
     private val schedulerSingleThread = Schedulers.from(Executors.newSingleThreadExecutor())
     private val disposable = CompositeDisposable()
@@ -48,8 +72,10 @@ class CardFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         toolbar.setNavigationOnClickListener { viewModel.openMenu() }
-
-        differentTextView.setOnClickListener(onClickListener)
+        differentTextView.apply {
+            setOnClickListener(onClickListener)
+            setOnTouchListener(differentTextViewTouchListener)
+        }
         viewModel.remoteDataLiveData.observe(this@CardFragment, Observer { data ->
             data?.let { setData(it) }
         })
