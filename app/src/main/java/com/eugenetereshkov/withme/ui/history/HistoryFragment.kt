@@ -14,6 +14,10 @@ import org.koin.android.ext.android.inject
 
 class HistoryFragment : BaseFragment() {
 
+    private companion object {
+        private const val RECYCLER_VIEW_STATE = "recycler_view_state"
+    }
+
     override val idResLayout: Int = R.layout.fragment_history
 
     private val viewModel: HistoryViewModel by inject()
@@ -36,8 +40,17 @@ class HistoryFragment : BaseFragment() {
         viewModel.historyLiveData.observe(this, Observer { history: List<HistoryViewModel.CardData>? ->
             history?.let {
                 adapter.submitList(it)
+                savedInstanceState?.let {
+                    recyclerView.layoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(RECYCLER_VIEW_STATE))
+                }
             }
         })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putParcelable(RECYCLER_VIEW_STATE, recyclerView.layoutManager.onSaveInstanceState())
     }
 
     override fun onBackPressed() {

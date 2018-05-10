@@ -88,8 +88,6 @@ class MainActivity : BaseActivity() {
         viewModel.firstViewAttachLiveData.observe(this@MainActivity, Observer {
             savedInstanceState ?: initMainScreen()
         })
-
-        viewModel.checkAuth()
     }
 
     override fun onResumeFragments() {

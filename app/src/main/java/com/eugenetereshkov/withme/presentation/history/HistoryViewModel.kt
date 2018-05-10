@@ -33,7 +33,6 @@ class HistoryViewModel(
     }
 
     private fun getHistory() {
-//        if (historyLiveData.value == null) {
         firestore.collection(AddCardViewModel.CARDS_COLLECTION)
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
@@ -55,7 +54,6 @@ class HistoryViewModel(
                         router.showSystemMessage(it.exception?.message.orEmpty())
                     }
                 }
-//        }
     }
 
     private fun getUpdate() {
