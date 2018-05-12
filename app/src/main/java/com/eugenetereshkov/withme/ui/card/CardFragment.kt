@@ -40,15 +40,13 @@ class CardFragment : BaseFragment() {
         override fun onTouch(view: View, event: MotionEvent): Boolean {
             when (event.action) {
                 MotionEvent.ACTION_MOVE -> {
-                    view.x = (startPT.x + event.x - downPT.x)
-                    view.y = (startPT.y + event.y - downPT.y)
+                    view.x = startPT.x + event.x - downPT.x
+                    view.y = startPT.y + event.y - downPT.y
                     startPT.set(view.x, view.y)
                 }
                 MotionEvent.ACTION_DOWN -> {
                     downPT.set(event.x, event.y)
                     startPT.set(view.x, view.y)
-                }
-                MotionEvent.ACTION_UP -> {
                 }
             }
 
