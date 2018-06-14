@@ -54,8 +54,8 @@ class AddCardViewModel(
             loadingLiveData.postValue(false)
 
             if (it.isSuccessful) {
-                val downloadUrl = it.result.downloadUrl
-                newCard.image = downloadUrl?.toString().orEmpty()
+                val downloadUrl = it.result.uploadSessionUri
+                newCard.image = downloadUrl.toString().orEmpty()
                 Timber.d(downloadUrl.toString())
             } else {
                 router.showSystemMessage(resourceManager.getString(R.string.error))
