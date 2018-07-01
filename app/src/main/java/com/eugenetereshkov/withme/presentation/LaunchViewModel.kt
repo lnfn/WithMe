@@ -2,10 +2,10 @@ package com.eugenetereshkov.withme.presentation
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.eugenetereshkov.withme.IUserConfig
 import com.eugenetereshkov.withme.R
-import com.eugenetereshkov.withme.ResourceManager
 import com.eugenetereshkov.withme.Screens
+import com.eugenetereshkov.withme.model.data.IUserConfig
+import com.eugenetereshkov.withme.model.system.ResourceManager
 import com.google.firebase.firestore.FirebaseFirestore
 import ru.terrakok.cicerone.Router
 

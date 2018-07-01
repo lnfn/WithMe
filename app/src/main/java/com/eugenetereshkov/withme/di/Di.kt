@@ -6,10 +6,13 @@ import com.eugenetereshkov.withme.BuildConfig
 import com.eugenetereshkov.withme.Constants.Companion.APP_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.AUTH_CONTEXT
 import com.eugenetereshkov.withme.Constants.Companion.MAIN_CONTEXT
-import com.eugenetereshkov.withme.IUserConfig
 import com.eugenetereshkov.withme.R
-import com.eugenetereshkov.withme.ResourceManager
-import com.eugenetereshkov.withme.UserConfig
+import com.eugenetereshkov.withme.model.data.FirebaseDataSource
+import com.eugenetereshkov.withme.model.data.IUserConfig
+import com.eugenetereshkov.withme.model.data.UserConfig
+import com.eugenetereshkov.withme.model.repository.AddCardRepository
+import com.eugenetereshkov.withme.model.repository.IAddCardRepository
+import com.eugenetereshkov.withme.model.system.ResourceManager
 import com.eugenetereshkov.withme.presentation.LaunchViewModel
 import com.eugenetereshkov.withme.presentation.MainViewModel
 import com.eugenetereshkov.withme.presentation.NavigationDrawerViewModel
@@ -47,12 +50,13 @@ val appModule = applicationContext {
 
         // Main scope
         context(MAIN_CONTEXT) {
+            bean { AddCardRepository(FirebaseDataSource()) as IAddCardRepository }
             viewModel { params ->
                 MainViewModel(get(), get(), params[LaunchViewModel.AUTH], get())
             }
             viewModel { CardViewModel(get(), get(), get()) }
             viewModel { NavigationDrawerViewModel(get(), get(), get()) }
-            viewModel { AddCardViewModel(get(), get()) }
+            viewModel { AddCardViewModel(get(), get(), get()) }
             viewModel { HistoryViewModel(get()) }
         }
     }

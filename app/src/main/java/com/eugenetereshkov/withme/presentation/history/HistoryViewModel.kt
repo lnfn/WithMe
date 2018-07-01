@@ -2,11 +2,13 @@ package com.eugenetereshkov.withme.presentation.history
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.os.Parcelable
 import com.eugenetereshkov.withme.presentation.addcard.AddCardViewModel
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import kotlinx.android.parcel.Parcelize
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
@@ -83,10 +85,11 @@ class HistoryViewModel(
         router.exit()
     }
 
+    @Parcelize
     data class CardData(
             val id: String,
             val image: String,
             val message: String,
             val createdAt: Date
-    )
+    ) : Parcelable
 }

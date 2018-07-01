@@ -1,4 +1,4 @@
-package com.eugenetereshkov.withme
+package com.eugenetereshkov.withme.glide
 
 import android.content.Context
 import com.bumptech.glide.Glide

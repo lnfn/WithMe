@@ -9,10 +9,10 @@ import android.view.MotionEvent
 import android.view.View
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.eugenetereshkov.withme.Constants.Companion.START_DATE
-import com.eugenetereshkov.withme.GlideApp
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.extension.bindTo
 import com.eugenetereshkov.withme.extension.timeDifferent
+import com.eugenetereshkov.withme.glide.GlideApp
 import com.eugenetereshkov.withme.presentation.card.CardViewModel
 import com.eugenetereshkov.withme.ui.global.BaseFragment
 import io.reactivex.Observable

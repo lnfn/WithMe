@@ -1,4 +1,4 @@
-package com.eugenetereshkov.withme
+package com.eugenetereshkov.withme.model.data
 
 import android.content.SharedPreferences
 import androidx.core.content.edit

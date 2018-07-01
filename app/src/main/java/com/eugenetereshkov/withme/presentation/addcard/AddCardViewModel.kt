@@ -2,22 +2,20 @@ package com.eugenetereshkov.withme.presentation.addcard
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.net.Uri
 import com.eugenetereshkov.withme.R
-import com.eugenetereshkov.withme.ResourceManager
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageTask
-import com.google.firebase.storage.UploadTask
+import com.eugenetereshkov.withme.extension.bindTo
+import com.eugenetereshkov.withme.model.repository.IAddCardRepository
+import com.eugenetereshkov.withme.model.system.ResourceManager
+import io.reactivex.disposables.CompositeDisposable
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
-import java.io.File
 import java.util.*
 
 
 class AddCardViewModel(
         private val router: Router,
-        private val resourceManager: ResourceManager
+        private val resourceManager: ResourceManager,
+        private val addCardRepository: IAddCardRepository
 ) : ViewModel() {
 
     companion object {
@@ -28,58 +26,55 @@ class AddCardViewModel(
     val loadingLiveData = MutableLiveData<Boolean>()
     val uploadProgressLiveData = MutableLiveData<Int>()
 
-    private var storageTask: StorageTask<UploadTask.TaskSnapshot>? = null
+    private val disposable = CompositeDisposable()
     private val newCard = Card()
 
     override fun onCleared() {
-        storageTask?.cancel()
+        disposable.clear()
         super.onCleared()
     }
 
     fun uploadImageToServer(url: String) {
-        loadingLiveData.value = true
-        val file = Uri.fromFile(File(url))
-        Timber.d(url)
-        Timber.d(file.toString())
-        val firebaseStorage = FirebaseStorage.getInstance()
-        val storageRef = firebaseStorage.reference
-        val imageRef = storageRef.child("images/${file.lastPathSegment}")
-        val uploadTask = imageRef.putFile(file)
+        addCardRepository.addImageToServer(url)
+                .doOnSubscribe { loadingLiveData.value = true }
+                .doOnTerminate { loadingLiveData.value = false }
+                .subscribe(
+                        { uploadImage ->
+                            val (imageUrl, progress) = uploadImage
+                            uploadProgressLiveData.value = progress
 
-        storageTask = uploadTask.addOnProgressListener {
-            val progress = 100.0 * it.bytesTransferred / it.totalByteCount
-            uploadProgressLiveData.postValue(progress.toInt())
-
-        }.addOnCompleteListener {
-            loadingLiveData.postValue(false)
-
-            if (it.isSuccessful) {
-                val downloadUrl = it.result.uploadSessionUri
-                newCard.image = downloadUrl.toString().orEmpty()
-                Timber.d(downloadUrl.toString())
-            } else {
-                router.showSystemMessage(resourceManager.getString(R.string.error))
-            }
-        }
+                            if (imageUrl.isNotEmpty()) {
+                                Timber.d(imageUrl)
+                                newCard.image = imageUrl
+                            }
+                        },
+                        this::showError
+                )
+                .bindTo(disposable)
     }
 
     fun saveCard(message: String) {
         newCard.message = message
-        FirebaseFirestore.getInstance().collection(CARDS_COLLECTION)
-                .add(newCard)
-                .addOnSuccessListener {
-                    router.showSystemMessage(resourceManager.getString(R.string.saved))
-                    router.exitWithResult(ADD_CARD_RESULT, Unit)
-                }
-                .addOnFailureListener {
-                    router.showSystemMessage(it.message)
-                }
+        addCardRepository.addCard(newCard)
+                .doOnSubscribe { loadingLiveData.value = true }
+                .doOnTerminate { loadingLiveData.value = false }
+                .subscribe(
+                        {
+                            router.showSystemMessage(resourceManager.getString(R.string.saved))
+                            router.exitWithResult(ADD_CARD_RESULT, Unit)
+                        },
+                        this::showError
+                )
+                .bindTo(disposable)
     }
 
     fun onBackPressed() {
         router.exit()
     }
 
+    private fun showError(t: Throwable) {
+        router.showSystemMessage(resourceManager.getString(R.string.error))
+    }
 
     class Card {
         var image: String = ""

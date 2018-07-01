@@ -11,9 +11,9 @@ import android.provider.MediaStore
 import android.view.View
 import androidx.core.view.isVisible
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.eugenetereshkov.withme.GlideApp
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.extension.bindTo
+import com.eugenetereshkov.withme.glide.GlideApp
 import com.eugenetereshkov.withme.presentation.addcard.AddCardViewModel
 import com.eugenetereshkov.withme.ui.global.BaseFragment
 import com.jakewharton.rxbinding2.widget.textChanges
@@ -55,9 +55,9 @@ class AddCardFragment : BaseFragment() {
                 viewLoadingHolder.post {
                     viewLoadingHolder?.isVisible = it
                     progressBar?.isVisible = it
-                    editTextMessage.isVisible = it.not()
+                    editTextMessage?.isVisible = it.not()
 
-                    if (it.not()) editTextMessage.requestFocus()
+                    if (it.not()) editTextMessage?.requestFocus()
                 }
             }
         })
