@@ -8,14 +8,19 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.support.v4.app.DialogFragment
+import android.support.v4.content.ContextCompat
+import android.support.v7.graphics.Palette
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.MotionEvent
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.glide.GlideApp
@@ -36,36 +41,38 @@ class HistoryFragment : BaseFragment() {
     override val idResLayout: Int = R.layout.fragment_history
 
     private val viewModel: HistoryViewModel by inject()
-    private lateinit var dialog: DialogFragment
     private val adapter by lazy {
-        HistoryAdapter { switch, view, data ->
+        HistoryAdapter { switch, _, data ->
             context?.let {
                 val background = imagePreview.rootView.getBlurredScreenDrawable(it)
                 GlideApp.with(it)
                         .asBitmap()
                         .load(data.image)
                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .listener(object : RequestListener<Bitmap> {
+                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                                return false
+                            }
+
+                            override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                if (resource != null) {
+                                    val palette = Palette.from(resource).generate()
+                                    messageLayout.setBackgroundColor(palette.getMutedColor(ContextCompat.getColor(it, R.color.white)))
+                                }
+                                return false
+                            }
+
+                        })
                         .into(object : SimpleTarget<Bitmap>() {
                             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                 vibrate()
                                 imagePreview.background = background
+                                textViewMessage.text = data.message
                                 previewImageView.setImageBitmap(resource)
                                 imagePreview.isVisible = switch
                             }
                         })
-                return@let Unit
-            }
-        }
-    }
-
-    private fun vibrate() {
-        context?.let {
-            (it.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).run {
-                if (Build.VERSION.SDK_INT >= 26) {
-                    vibrate(VibrationEffect.createOneShot(30, VibrationEffect.DEFAULT_AMPLITUDE))
-                } else {
-                    vibrate(30)
-                }
+                return@let
             }
         }
     }
@@ -115,5 +122,17 @@ class HistoryFragment : BaseFragment() {
 
     override fun onBackPressed() {
         viewModel.onBackPressed()
+    }
+
+    private fun vibrate() {
+        context?.let {
+            (it.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).run {
+                if (Build.VERSION.SDK_INT >= 26) {
+                    vibrate(VibrationEffect.createOneShot(30, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    vibrate(30)
+                }
+            }
+        }
     }
 }

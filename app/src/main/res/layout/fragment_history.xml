@@ -63,6 +63,25 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     android:src="@drawable/back" />
+
+                <FrameLayout
+                    android:id="@+id/messageLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/textViewMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="sfsdffdsvsdvsdv xzcvvxv" />
+                </FrameLayout>
             </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
     </FrameLayout>
