@@ -55,7 +55,12 @@ class MainActivity : BaseActivity() {
                 else -> null
             }
 
-            override fun setupFragmentTransactionAnimation(command: Command?, currentFragment: Fragment?, nextFragment: Fragment?, fragmentTransaction: FragmentTransaction?) {
+            override fun setupFragmentTransactionAnimation(
+                    command: Command?,
+                    currentFragment: Fragment?,
+                    nextFragment: Fragment?,
+                    fragmentTransaction: FragmentTransaction?
+            ) {
                 when (command) {
                     is Forward -> fragmentTransaction?.setCustomAnimations(
                             R.anim.slide_in_left,

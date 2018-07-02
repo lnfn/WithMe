@@ -6,7 +6,9 @@ import com.eugenetereshkov.withme.R
 import com.eugenetereshkov.withme.Screens
 import com.eugenetereshkov.withme.model.data.IUserConfig
 import com.eugenetereshkov.withme.model.system.ResourceManager
+import com.google.firebase.auth.FirebaseAuth
 import ru.terrakok.cicerone.Router
+import timber.log.Timber
 
 
 class MainViewModel(
@@ -18,8 +20,21 @@ class MainViewModel(
 
     val firstViewAttachLiveData = MutableLiveData<Unit>()
 
+    private val firebaseAuth = FirebaseAuth.getInstance()
+
     init {
-        checkAuth()
+        checkFirebaseAuth()
+    }
+
+    private fun checkFirebaseAuth() {
+        firebaseAuth.currentUser?.let {
+            firebaseAuth.signInAnonymously()
+                    .addOnSuccessListener {
+                        Timber.d(firebaseAuth.currentUser.toString())
+                        checkAuth()
+                    }
+                    .addOnFailureListener { Timber.d(it.message) }
+        } ?: checkAuth()
     }
 
     private fun checkAuth() {

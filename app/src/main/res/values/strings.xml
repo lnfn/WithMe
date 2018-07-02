@@ -15,4 +15,5 @@
     <string name="yes">Да</string>
     <string name="cancel">Отмена</string>
     <string name="logout_question">Выйти из приложения</string>
+    <string name="error_auth">Ошибка авторизации</string>
 </resources>
