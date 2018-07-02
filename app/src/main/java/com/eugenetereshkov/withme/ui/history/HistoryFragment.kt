@@ -50,7 +50,6 @@ class HistoryFragment : BaseFragment() {
                 GlideApp.with(it)
                         .asBitmap()
                         .load(data.image)
-                        .thumbnail(0.5f)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .listener(object : RequestListener<Bitmap> {
                             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {

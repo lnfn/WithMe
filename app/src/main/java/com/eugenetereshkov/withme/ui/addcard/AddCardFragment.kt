@@ -6,7 +6,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import androidx.core.view.isVisible
@@ -22,6 +25,12 @@ import kotlinx.android.synthetic.main.fragment_add_card.*
 import org.koin.android.architecture.ext.viewModel
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
+import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @RuntimePermissions
@@ -101,8 +110,7 @@ class AddCardFragment : BaseFragment() {
                     cursor.moveToFirst()
                     val columnIndex = cursor.getColumnIndex(filePathColumn[0])
                     val imageDecode = cursor.getString(columnIndex)
-                    setUserImage(imageDecode)
-                    viewModel.uploadImageToServer(imageDecode)
+                    reduceBitmap(imageDecode)
                 }
             }
         }
@@ -119,7 +127,57 @@ class AddCardFragment : BaseFragment() {
         startActivityForResult(intent, REQUEST_GALLERY)
     }
 
-    private fun setUserImage(url: String?) {
+    private fun reduceBitmap(path: String) {
+        // Get the dimensions of the View
+        val targetW = imageViewAddImage.width
+        val targetH = imageViewAddImage.height
+
+        Timber.d("targetW $targetW, targetH $targetH")
+
+        // Get the dimensions of the bitmap
+        val bmOptions = BitmapFactory.Options()
+        bmOptions.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(path, bmOptions)
+        val photoW = bmOptions.outWidth
+        val photoH = bmOptions.outHeight
+
+        // Determine how much to scale down the image
+        val scaleFactor = Math.max(photoW / targetW, photoH / targetH) * 1.5
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false
+        bmOptions.inSampleSize = scaleFactor.toInt()
+
+        val bitmap = BitmapFactory.decodeFile(path, bmOptions)
+        Timber.d("targetW ${bitmap.width}, targetH ${bitmap.height}")
+        setUserImage(bitmap)
+
+        val file = createImageFile()
+        val fOut = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.WEBP, 75, fOut)
+        fOut.flush()
+        fOut.close()
+
+        viewModel.uploadImageToServer(file.absolutePath)
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val storageDir = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+                imageFileName, /* prefix */
+                ".webp", /* suffix */
+                storageDir      /* directory */
+        )
+
+        // Save a file: path for use with ACTION_VIEW intents
+        return image
+    }
+
+
+    private fun setUserImage(url: Bitmap) {
         GlideApp.with(this@AddCardFragment)
                 .load(url)
                 .centerCrop()
