@@ -4,6 +4,8 @@ package com.eugenetereshkov.withme.ui.history
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -48,7 +50,8 @@ class HistoryFragment : BaseFragment() {
                 GlideApp.with(it)
                         .asBitmap()
                         .load(data.image)
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .thumbnail(0.5f)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .listener(object : RequestListener<Bitmap> {
                             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                                 return false
@@ -64,6 +67,10 @@ class HistoryFragment : BaseFragment() {
 
                         })
                         .into(object : SimpleTarget<Bitmap>() {
+                            override fun onLoadCleared(placeholder: Drawable?) {
+                                (previewImageView.drawable as BitmapDrawable).bitmap.recycle()
+                            }
+
                             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                 vibrate()
                                 imagePreview.background = background
@@ -93,7 +100,9 @@ class HistoryFragment : BaseFragment() {
                 override fun onInterceptTouchEvent(rv: RecyclerView?, e: MotionEvent?): Boolean {
                     when (e?.action) {
                         MotionEvent.ACTION_UP -> {
-                            if (imagePreview.isVisible) imagePreview.isGone = true
+                            if (imagePreview.isVisible) {
+                                imagePreview.isGone = true
+                            }
                         }
                     }
                     return false

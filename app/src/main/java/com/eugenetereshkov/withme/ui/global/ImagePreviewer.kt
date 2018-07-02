@@ -10,7 +10,6 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import com.eugenetereshkov.withme.R
@@ -29,21 +28,6 @@ fun ImageView.show(context: Context) {
     val dialog = Dialog(context, R.style.FullScreenDialogStyle).apply {
         window.setBackgroundDrawable(background)
         setContentView(dialogView)
-    }
-    this.performLongClick()
-    this.setOnTouchListener { view, event ->
-        if (dialog.isShowing) {
-            view.parent.requestDisallowInterceptTouchEvent(true)
-
-            when (event.actionMasked) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    view.parent.requestDisallowInterceptTouchEvent(false)
-                    dialog.dismiss()
-                    return@setOnTouchListener true
-                }
-            }
-        }
-        return@setOnTouchListener false
     }
 
     dialog.show()

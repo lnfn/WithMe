@@ -42,7 +42,7 @@ class HistoryAdapter(
 
             GlideApp.with(itemView.context)
                     .load(item.image)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .dontAnimate()
                     .into(imageView)
         }
